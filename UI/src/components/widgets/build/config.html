@@ -3,11 +3,11 @@
         <form-group class="text-center" input="collectorItemId" errors="{required: 'Please select a collector'}">
             <select name="collectorItemId"
                     class="form-control"
-                    ng-model="buildConfig.collectorItemId"
-                    ng-options="item.name for item in buildConfig.buildJobs | orderBy: 'name' track by item.value"
+                    ng-model="buildConfig.buildOption"
+                    ng-options="item.name for item in buildConfig.buildOptions"
                     ng-disabled="buildConfig.toolsDropdownDisabled"
                     required>
-                <option value="">{{buildConfig.toolsDropdownPlaceholder}}</option>
+                <option value="" disabled>Select a type</option>
             </select>
         </form-group>
 

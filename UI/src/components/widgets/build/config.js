@@ -19,9 +19,14 @@
 
         ctrl.buildDurationThreshold = 3;
         ctrl.buildConsecutiveFailureThreshold = 5;
+        ctrl.buildOption = "Travis-CI";
 
         // set values from config
         if (widgetConfig) {
+            
+            if (widgetConfig.options.buildOption) {
+                ctrl.buildOption = widgetConfig.options.buildOption;
+            }
             if (widgetConfig.options.buildDurationThreshold) {
                 ctrl.buildDurationThreshold = widgetConfig.options.buildDurationThreshold;
             }
@@ -33,73 +38,59 @@
 
         // public methods
         ctrl.submit = submitForm;
+        ctrl.submitted = false;
 
-        // request all the build collector items
-        collectorData.itemsByType('build').then(processResponse);
+		// Request collectors
+        collectorData.collectorsByType('Build').then(processCollectorsResponse);
 
-        // method implementations
-        function processResponse(data) {
-            var worker = {
-                getBuildJobs: getBuildJobs
+        function processCollectorsResponse(data) {
+            ctrl.collectors = data;
+            ctrl.buildOptions = createBuildOptions(data);
+            ctrl.toolsDropdownDisabled = false;
+        }
+
+        function createBuildOptions(data) {
+            var options = [];
+            if (data && data.length > 0) {
+                for (var i =0; i < data.length; i++) {
+                    options.push({"name":data[i].name, "value":data[i].id});
+                }
+            }
+            return options;
+        }
+        
+        function submitForm(valid) {
+            var buildOption = 
+                ctrl.submitted = true;
+            if (valid && ctrl.collectors.length) {
+                createCollectorItem(buildOption).then(processCollectorItemResponse);
+            }
+        }
+
+        function processCollectorItemResponse(response) {
+            var form = document.buildConfigForm;
+            var postObj = {
+                name: 'build',
+                options: {
+                    id: widgetConfig.options.id,
+                    buildOption: widgetConfig.options.buildOption,
+                    buildDurationThreshold: parseFloat(form.buildDurationThreshold.value),
+                    consecutiveFailureThreshold: parseFloat(form.buildConsecutiveFailureThreshold.value)
+                },
+                componentId: modalData.dashboard.application.components[0].id,
+                collectorItemId: response.data.id
             };
 
-            function getBuildJobs(data, currentCollectorItemId, cb) {
-                var builds = [],
-                    selectedIndex = null;
-
-                for (var x = 0; x < data.length; x++) {
-                    var obj = data[x];
-                    var item = {
-                        value: obj.id,
-                        name: ((obj.niceName != null) && (obj.niceName != "") ? obj.niceName + '-' + obj.description : obj.collector.name + '-' + obj.description)
-                    };
-                    builds.push(item);
-
-                    if (currentCollectorItemId !== null && item.value == currentCollectorItemId) {
-                        selectedIndex = x;
-                    }
-                }
-
-                cb({
-                    builds: builds,
-                    selectedIndex: selectedIndex
-                });
-            }
-
-            var buildCollector = modalData.dashboard.application.components[0].collectorItems.Build;
-            var buildCollectorId = buildCollector ? buildCollector[0].id : null;
-            worker.getBuildJobs(data, buildCollectorId, getBuildsCallback);
+            // pass this new config to the modal closing so it's saved
+            $modalInstance.close(postObj);
         }
 
-        function getBuildsCallback(data) {
-            //$scope.$apply(function () {
-                ctrl.buildJobs = data.builds;
-                ctrl.toolsDropdownPlaceholder = 'Select a Build Job';
-                ctrl.toolsDropdownDisabled = false;
-
-                if (data.selectedIndex !== null) {
-                    ctrl.collectorItemId = ctrl.buildJobs[data.selectedIndex];
-                }
-            //});
-        }
-
-        function submitForm(valid) {
-            if (valid) {
-                var form = document.buildConfigForm;
-                var postObj = {
-                    name: 'build',
-                    options: {
-                        id: widgetConfig.options.id,
-                        buildDurationThreshold: parseFloat(form.buildDurationThreshold.value),
-                        consecutiveFailureThreshold: parseFloat(form.buildConsecutiveFailureThreshold.value)
-                    },
-                    componentId: modalData.dashboard.application.components[0].id,
-                    collectorItemId: form.collectorItemId.value
-                };
-
-                // pass this new config to the modal closing so it's saved
-                $modalInstance.close(postObj);
+        function createCollectorItem(buildOption) {
+            var item = {};
+            item = {
+                collectorId : ctrl.buildOption.value
             }
+            return collectorData.createCollectorItem(item);
         }
     }
 })();

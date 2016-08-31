@@ -40,6 +40,7 @@
             _(types).forEach(function (item) {
                 if(item.id == DashboardType.PRODUCT) {
                     item.icon = 'fa-cubes';
+                    item.name = 'Group'; //AN: hack to name product as group
                 }
             });
 
@@ -50,6 +51,9 @@
 
             // request my dashboards
             dashboardData.mydashboard(ctrl.username).then(processMyDashboardResponse, processMyDashboardError);
+
+            // AN: default to group dashboard
+            ctrl.dashboardType = DashboardType.PRODUCT;
         })();
 
         function setType(type) {
@@ -151,7 +155,7 @@
                 var msg = 'An error occurred while deleting the dashboard';
 
                 if(response.status > 204 && response.status < 500) {
-                    msg = 'The Team Dashboard is currently being used by a Product Dashboard/s. You cannot delete at this time.';
+                    msg = 'The Team Dashboard is currently being used by a Group Dashboard/s. You cannot delete at this time.';
                 }
 
                 swal(msg);
