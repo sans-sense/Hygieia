@@ -7,8 +7,7 @@ If you want to write your own collectors, here are some unofficial tips. Word of
 
 Quirks
 ======================
-Components need to be run at least once for the db to be properly seeded.   
-Example: To get builds working, the expectation is that people will run the jenkins-build-collector which adds collector type build and then jobs as collector items.
+Components need to be run at least once for the db to be properly seeded, for example, to get builds working, jenkins-build-collector has to run, which adds collector type and then jobs as collector items, the ui lets us match these jobs against dashboards. This does mean that any quick demo is tough, one way of getting around it is manually inserting the collectors and tweaking the ui to show these, [example commit](https://github.com/sans-sense/Hygieia/commit/8299b7fc05be45df5091a621507eb7704449d90c). 
 
  
 Data Model
