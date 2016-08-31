@@ -7,7 +7,7 @@ If you want to write your own collectors, here are some unofficial tips. Word of
 
 Quirks
 ======================
-Components need to be run at least once for the db to be properly seeded, for example, to get "Features" working v1 or Jira collector has to be run first, without it the feature widget will not eveb show options to configure in the dashboard. Similarly to get builds working, jenkins-build-collector has to run, which adds collector type and then jobs as collector items, the ui lets us match these jobs against dashboards. For my org's work which spans tools that are hosted and on-prem and multiple servers with the same stuff, this style of collectors does pose an issue. This fork addresses these problems. 
+Components need to be run at least once for the db to be properly seeded, for example, to get "Features" working v1 or Jira collector has to be run first, without it the feature widget will not even show options to configure in the dashboard. Similarly to get builds working, jenkins-build-collector has to run, which adds collector type and then jobs as collector items, the ui lets us match these jobs against dashboards. For my work which spans tools that are hosted and on-prem and multiple servers with the same stuff, this style of collectors does pose an issue. This fork addresses these problems. 
 
 For a quick demo, manually inserting the collectors and tweaking the ui to show some things will also work, [example commit](https://github.com/sans-sense/Hygieia/commit/8299b7fc05be45df5091a621507eb7704449d90c).
 
